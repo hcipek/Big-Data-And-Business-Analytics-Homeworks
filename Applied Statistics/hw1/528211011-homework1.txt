@@ -1,0 +1,133 @@
+# Hakan Can İpek, 528211011, Applied Statistics Homework 1
+
+
+install.packages("readr")
+library(readr)
+install.packages("magrittr")
+library(magrittr)
+install.packages("dplyr") 
+library(dplyr)
+
+nba_stats <- read.csv("C:/Users/ipekh/Desktop/Big Data Homeworks/Applied Statistics/hw1/Seasons_Stats.csv")
+
+#Q1:
+	nba_stats %>% 
+	group_by(Player) %>% 
+	summarise(Points = max(PTS)) %>% 
+	arrange(desc(Points))
+#	-------
+	# A tibble: 3,959 x 2
+# Groups:   Player [3,921]
+#   Player                 PTS
+#   <chr>                <int>
+# 1 Wilt Chamberlain*     4029
+# 2 Michael Jordan*       3041
+# 3 Kobe Bryant           2832
+# 4 Bob McAdoo*           2831
+# 5 Kareem Abdul-Jabbar*  2822
+# 6 Rick Barry*           2775
+# 7 Elgin Baylor*         2719
+# 8 Tiny Archibald*       2719
+# 9 Kevin Durant          2593
+#10 George Gervin*        2585
+# ... with 3,949 more rows
+#-------------------------------
+
+
+#Q2:
+	nba_stats %>% 
+	mutate(PointsPerGame = PTS/G) %>% 
+	group_by(Player) %>% 
+	filter(PointsPerGame > 20) %>% 
+	select(Player, PointsPerGame) %>% 
+	summarise(count = n()) %>% 
+	arrange(desc(count))
+#	---------
+# A tibble: 323 x 2
+#   Player               count
+#   <chr>                <int>
+# 1 Kareem Abdul-Jabbar*    17
+# 2 Karl Malone*            17
+# 3 Carmelo Anthony         16
+# 4 Kobe Bryant             15
+# 5 Allen Iverson*          14
+# 6 LeBron James            14
+# 7 Michael Jordan*         14
+# 8 Shaquille O'Neal*       14
+# 9 Wilt Chamberlain*       14
+#10 Dirk Nowitzki           13
+# ... with 313 more rows
+#------------------------
+
+
+
+#Q3:
+	nba_stats %>% 
+    mutate(Efficiency = (PTS+TRB+AST+STL+BLK-(FGA-FG)-(FTA-FT)-TOV)/ G) %>% 
+    select(Player, Year, Efficiency, TOV) %>% 
+    tail(n=10)
+#	------------------
+#                 Player Year Efficiency TOV
+#24682      Delon Wright 2017   6.962963  25
+#24683       James Young 2017   2.413793   4
+#24684         Joe Young 2017   1.484848   5
+#24685        Nick Young 2017  10.450000  36
+#24686    Thaddeus Young 2017  14.418919  96
+#24687       Cody Zeller 2017  15.241935  65
+#24688      Tyler Zeller 2017   5.000000  20
+#24689 Stephen Zimmerman 2017   2.263158   3
+#24690       Paul Zipser 2017   5.681818  40
+#24691       Ivica Zubac 2017   9.500000  30
+#-------------------------------------------
+
+
+
+#Q4:
+	nba_stats %>% 
+    mutate(Efficiency = (PTS+TRB+AST+STL+BLK-(FGA-FG)-(FTA-FT)-TOV)/ G) %>% 
+    select(Player, Efficiency, Year) %>% 
+    filter(!is.na(Efficiency)) %>% 
+	group_by(Player) %>% 
+	slice(which.max(Efficiency)) %>% 
+	arrange(Player) %>% 
+	rename(best_efficiency=Efficiency,best_season=Year)
+#	-----------------------------------------
+# A tibble: 2,936 x 3
+# Groups:   Player [2,936]
+#   Player        best_efficiency best_season
+#   <chr>                   <dbl>       <int>
+# 1 A.C. Green              18.8         1994
+# 2 A.J. Bramlett            1.38        2000
+# 3 A.J. English             7.91        1992
+# 4 A.J. Guyton              5.18        2001
+# 5 A.J. Hammons             2.55        2017
+# 6 A.J. Price               8.4         2015
+# 7 A.J. Wynder              1.5         1991
+# 8 Aaron Brooks            15.8         2010
+# 9 Aaron Gordon            13.2         2016
+#10 Aaron Gray               7.90        2012
+# ... with 2,926 more rows
+#----------------------------------------------
+
+
+
+#Q5:
+	nba_stats %>% 
+	group_by(Player) %>% 
+	summarise(Total = sum(PTS)) %>% 
+	filter(Total >= 10000)
+#	-------------------------------------------
+#   Player           Total
+#   <chr>            <int>
+# 1 A.C. Green       12928
+# 2 Adrian Dantley*  26274
+# 3 Al Harrington    15991
+# 4 Al Jefferson     14091
+# 5 Alex English*    26931
+# 6 Allan Houston    14551
+# 7 Allen Iverson*   27457
+# 8 Alonzo Mourning* 14593
+# 9 Alvan Adams      13910
+#10 Alvin Robertson  11500
+# ... with 377 more rows
+#-------------------------------------------------
